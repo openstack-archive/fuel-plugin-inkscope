@@ -1,0 +1,44 @@
+<VirtualHost *:<%= @inkscope_port %>>
+    ServerName  localhost
+    ServerAdmin webmaster@localhost
+
+    DocumentRoot /var/www/inkscope
+    <Directory "/var/www/inkscope">
+        Options All
+        AllowOverride All
+    </Directory>
+
+    ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+    <Directory "/usr/lib/cgi-bin">
+        AllowOverride None
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+
+
+   WSGIScriptAlias /ceph_rest_api /var/www/inkscope/inkscopeCtrl/ceph-rest-api.wsgi
+
+    <Directory "/var/www/inkscope/inkScopeCtrl">
+          Require all granted
+    </Directory>
+
+    WSGIScriptAlias /inkscopeCtrl /var/www/inkscope/inkscopeCtrl/inkscopeCtrl.wsgi
+    <Directory "/var/www/inkscope/inkscopeCtrl">
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+    ProxyRequests Off  # we want  a "Reverse proxy"
+    ProxyPass /ceph-rest-api/ http://<%= @controller_node_public%>:<%= @inkscope_port %>/ceph_rest_api/api/v0.1/
+
+    ErrorLog /var/log/apache2/error_inkscope.log
+
+    # Possible values include: debug, info, notice, warn, error, crit,
+    # alert, emerg.
+    LogLevel debug
+
+    CustomLog /var/log/apache2/access.log combined
+
+</VirtualHost>

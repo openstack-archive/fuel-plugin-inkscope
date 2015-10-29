@@ -1,0 +1,22 @@
+# This task is required for controller nodes
+- role: ['primary-mongo', 'mongo']
+  stage: post_deployment/2000
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/site_mongo.pp
+    puppet_modules:  "puppet/modules/:/etc/puppet/modules/"
+    timeout: 600
+- role: ['primary-controller', 'controller']
+  stage: post_deployment/3000
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/site.pp
+    puppet_modules:  "puppet/modules/:/etc/puppet/modules/"
+    timeout: 600
+- role: ['ceph-osd']
+  stage: post_deployment/4000
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/site_osd.pp
+    puppet_modules:  "puppet/modules/:/etc/puppet/modules/"
+    timeout: 600
